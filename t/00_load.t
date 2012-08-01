@@ -3,24 +3,21 @@
 use warnings;
 use strict;
 
-use Test::More qw( tests 14 );
+use Test::More tests => 5;
+
+# This script is redundant to perl Makefile.PL, which also gives a finer
+# granularity and separation of what is required for run, config, build,
+# test, etc. -- including specific version thresholds if necessary.
+#
+# Here we test only what is required to run, equivalent of PREREQ_PM.
 
 BEGIN {
     my @classes = qw(
         Carp
         English
         Getopt::Long
-        IO::All
         IPC::Open2
-        Module::Load::Conditional
-        Pod::Usage
         Term::ANSIColor
-        Test::More
-        Test::Most
-        Test::Output
-        Test::Pod
-        Test::Pod::Coverage
-        Test::Spelling
     );
 
     foreach my $class (@classes) {

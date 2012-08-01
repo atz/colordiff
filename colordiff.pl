@@ -26,7 +26,7 @@ use Getopt::Long qw(:config pass_through);
 use IPC::Open2;
 
 my $app_name     = 'colordiff';
-my $version      = '1.0.10';
+our $VERSION     = '1.0.10';
 my $author       = 'Dave Ewart';
 my $author_email = 'davee@sungate.co.uk';
 my $app_www      = 'http://colordiff.sourceforge.net/';
@@ -182,7 +182,7 @@ GetOptions(
 # ----------------------------------------------------------------------------
 
 if ($show_banner == 1) {
-    print STDERR "$app_name $version ($app_www)\n";
+    print STDERR "$app_name $VERSION ($app_www)\n";
     print STDERR "$copyright $author, $author_email\n\n";
 }
 
@@ -452,3 +452,122 @@ foreach (@inputstream) {
 }
 
 exit $exitcode;
+
+#-----------------------------------------------------------------------------
+
+=pod
+
+=head1 NAME
+
+colordiff - a wrapper/replacment for 'diff' producing colourful output
+
+=head1 SYNOPSIS
+
+colordiff [diff options] [colordiff options] {file1} {file2}
+
+=head1 DESCRIPTION
+
+colordiff is a wrapper for diff and produces the same output as diff but with coloured syntax highlighting at the command line to improve
+readability. The output is similar to how a diff-generated patch might appear in Vim or Emacs with the appropriate syntax highlighting options
+enabled. The colour schemes can be read from a central configuration file or from a local user ~/.colordiffrc file.
+
+colordiff makes use of ANSI colours and as such will only work when ANSI colours can be used - typical examples are xterms and Eterms, as well
+as console sessions.
+
+colordiff has been tested on various flavours of Linux and under OpenBSD, but should be broadly portable to other systems.
+
+=head1 USAGE
+
+Use colordiff wherever you would normally use diff, or pipe output to colordiff:
+
+For example:
+
+   $ colordiff file1 file2
+   $ diff -u file1 file2 | colordiff
+
+You can pipe the output to B<less>, using the ´-R´ option (some systems or terminal types may get better results using ´-r´ instead), which
+keeps the colour escape sequences, otherwise displayed incorrectly or discarded by B<less>:
+
+   $ diff -u file1 file2 | colordiff | less -R
+
+If you have wdiff installed, colordiff will correctly colourise the added and removed text, provided that the ´-n´ option is given to wdiff:
+
+   $ wdiff -n file1 file2 | colordiff
+
+You may find it useful to make diff automatically call colordiff. Add the following line to ~/.bashrc (or equivalent):
+
+   alias diff=colordiff
+
+Any options passed to colordiff are passed through to diff except for the colordiff-specific option ´difftype´, e.g.
+
+   colordiff --difftype=debdiff file1 file2
+
+Valid values for ´difftype´ are: diff, diffc, diffu, diffy, wdiff, debdiff; these correspond to plain diffs, context diffs, unified diffs,
+side-by-side diffs, wdiff output and debdiff output respectively. Use these overrides when colordiff is not able to determine the diff-type
+automatically.
+
+Alternatively, a construct such as ´cvs diff SOMETHING | colordiff´ can be included in ~/.bashrc as follows:
+
+   function cvsdiff () { cvs diff $@ | colordiff; }
+
+Or, combining the idea above using ´less´:
+
+   function cvsdiff () { cvs diff $@ | colordiff |less -R; }
+
+Note that the function name, cvsdiff, can be customized.
+
+=head1 FILES
+
+=head3 /etc/colordiffrc
+
+=over
+
+Central configuration file. User-specific settings can be enabled by copying this file to ~/.colordiffrc and making the appropriate
+changes.
+
+=back 
+
+=head3 colordiffrc-lightbg
+
+=over
+
+Alternate configuration template for use with terminals having light backgrounds. Copy this to /etc/colordiffrc or ~/.colordiffrc and
+customize.
+
+=back
+
+=head1 BUGS AND LIMITATIONS
+
+There is always the possibility of colour selections (either the defaults
+or those chosen by a user) will result in output where the text 'disappears',
+because the foreground and background colours are the same.  There is no way
+to detect terminal colours and so this is always a danger.  See
+L<http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=368973> - The standard
+workaround is to choose either colordiffrc or colordiffrc-lightbg, as
+appropriate for the colour scheme in use.
+
+Colourising of 'wdiff' output requires that the '-n' option is given, i.e.
+'wdiff -n', which avoids spanning the end of line while showing deleted or
+inserted text.  See B<man wdiff>.
+
+Bug reports and suggestions/patches to L<davee@sungate.co.uk> please.
+
+=head1 HOMEPAGE
+
+L<http://colordiff.sourceforge.net/>
+
+=head1 AUTHOR
+
+    Dave Ewart - davee@sungate.co.uk
+    Kirk Kimmel - https://github.com/kimmel
+
+=head1 LICENSE AND COPYRIGHT
+
+    Copyright (C) 2002-2011 Dave Ewart
+    Copyright (C) 2011 Kirk Kimmel
+
+This program is free software; you can redistribute it and/or modify it under
+the GPL v2+. The full text of this license can be found online at 
+L<http://opensource.org/licenses/GPL-2.0>
+
+=cut
